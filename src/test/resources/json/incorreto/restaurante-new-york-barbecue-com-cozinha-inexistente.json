@@ -1,0 +1,7 @@
+{
+	"nome": "New York Barbecue",
+	"taxaFrete": 20,
+	"cozinha": {
+		"id": 200
+	}
+}
