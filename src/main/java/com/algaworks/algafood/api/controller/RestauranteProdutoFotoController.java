@@ -1,10 +1,12 @@
 package com.algaworks.algafood.api.controller;
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,10 +16,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.algaworks.algafood.api.assembler.OutputAssembler;
 import com.algaworks.algafood.api.model.input.FotoProdutoInput;
 import com.algaworks.algafood.api.model.output.FotoProdutoOutput;
+import com.algaworks.algafood.domain.exception.FotoProdutoNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.ObjectNaoEncontradoException;
 import com.algaworks.algafood.domain.model.FotoProduto;
 import com.algaworks.algafood.domain.model.Produto;
 import com.algaworks.algafood.domain.service.CatalogoFotoProdutoService;
+
 import com.algaworks.algafood.domain.service.ProdutoService;
 
 @RestController
@@ -54,8 +58,25 @@ public class RestauranteProdutoFotoController {
 		}else {
 			throw new ObjectNaoEncontradoException(restauranteId, "Restaurante");
 		}
+	}
+	
+	@GetMapping
+	public FotoProdutoOutput buscar(@PathVariable Long restauranteId, 
+	        						@PathVariable("produtoId") Produto produto, Long produtoId) {
+		System.out.println(produto);
+		System.out.println(produto.getRestaurante());
 		
+		Optional.ofNullable(produto).orElseThrow(
+				() -> new ObjectNaoEncontradoException(produtoId, "Produto"));
 		
+		if (produto.getRestaurante().getId() != restauranteId) {
+			throw new ObjectNaoEncontradoException(restauranteId, "Restaurante");
+		};
+		
+	    FotoProduto fotoProduto = catalogoFotoProduto.findBy_id(produtoId);
+	    Optional.ofNullable(fotoProduto).orElseThrow(() -> new FotoProdutoNaoEncontradaException(restauranteId, produtoId));
+	    
+	    return outputAssembler.toModel(fotoProduto, FotoProdutoOutput.class);
 	}
 	
 }

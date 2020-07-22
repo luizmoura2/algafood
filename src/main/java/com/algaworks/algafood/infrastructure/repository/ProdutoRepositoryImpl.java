@@ -31,4 +31,6 @@ public class ProdutoRepositoryImpl implements ProdutoRepositoryQueries {
 	public void delete(FotoProduto foto) {
 		manager.remove(foto);
 	}
+
+	
 }
