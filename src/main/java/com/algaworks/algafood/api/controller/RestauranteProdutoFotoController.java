@@ -62,10 +62,11 @@ public class RestauranteProdutoFotoController {
 	
 	@GetMapping
 	public FotoProdutoOutput buscar(@PathVariable Long restauranteId, 
-	        						@PathVariable("produtoId") Produto produto, Long produtoId) {
+	        						@PathVariable("produtoId") Produto produto) {
 		System.out.println(produto);
 		System.out.println(produto.getRestaurante());
 		
+		Long produtoId = produto.getId();
 		Optional.ofNullable(produto).orElseThrow(
 				() -> new ObjectNaoEncontradoException(produtoId, "Produto"));
 		

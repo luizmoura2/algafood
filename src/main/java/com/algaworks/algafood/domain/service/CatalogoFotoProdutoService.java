@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.algaworks.algafood.domain.exception.ObjectNaoEncontradoException;
 import com.algaworks.algafood.domain.model.FotoProduto;
 import com.algaworks.algafood.domain.repository.ProdutoRepository;
 import com.algaworks.algafood.domain.service.FotoStorageService.NovaFoto;
@@ -51,8 +50,8 @@ public class CatalogoFotoProdutoService {
 	
 	public FotoProduto findBy_id(Long produtoId) {
 		
-		FotoProduto foto = produtoRepository.findFoto(produtoId);
-		
+		FotoProduto foto = produtoRepository.findFotoByProdutoId(produtoId);
+		System.out.println(foto);
 		return foto;
 	            
 		
