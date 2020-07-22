@@ -1,11 +1,14 @@
 package com.algaworks.algafood.api.controller;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.algaworks.algafood.api.assembler.OutputAssembler;
 import com.algaworks.algafood.api.model.input.FotoProdutoInput;
 import com.algaworks.algafood.api.model.output.FotoProdutoOutput;
+import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.FotoProdutoNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.ObjectNaoEncontradoException;
 import com.algaworks.algafood.domain.model.FotoProduto;
@@ -23,11 +27,15 @@ import com.algaworks.algafood.domain.model.Produto;
 import com.algaworks.algafood.domain.service.CatalogoFotoProdutoService;
 
 import com.algaworks.algafood.domain.service.ProdutoService;
+import com.algaworks.algafood.infraestrutura.service.LocalFotoStorageService;
 
 @RestController
 @RequestMapping("/restaurantes/{restauranteId}/produtos/{produtoId}/foto")
 public class RestauranteProdutoFotoController {
 
+	@Autowired
+	private LocalFotoStorageService fotoStorage;
+	
 	@Autowired
 	private ProdutoService cadastroProduto;
 	
@@ -63,9 +71,7 @@ public class RestauranteProdutoFotoController {
 	@GetMapping
 	public FotoProdutoOutput buscar(@PathVariable Long restauranteId, 
 	        						@PathVariable("produtoId") Produto produto) {
-		System.out.println(produto);
-		System.out.println(produto.getRestaurante());
-		
+			
 		Long produtoId = produto.getId();
 		Optional.ofNullable(produto).orElseThrow(
 				() -> new ObjectNaoEncontradoException(produtoId, "Produto"));
@@ -78,6 +84,22 @@ public class RestauranteProdutoFotoController {
 	    Optional.ofNullable(fotoProduto).orElseThrow(() -> new FotoProdutoNaoEncontradaException(restauranteId, produtoId));
 	    
 	    return outputAssembler.toModel(fotoProduto, FotoProdutoOutput.class);
+	}
+	
+	@GetMapping(produces = MediaType.IMAGE_JPEG_VALUE)
+	public ResponseEntity<InputStreamResource> servirFoto(@PathVariable Long restauranteId, 
+			@PathVariable Long produtoId) {
+		try {
+			FotoProduto fotoProduto = catalogoFotoProduto.findBy_id(produtoId);
+			
+			InputStream inputStream = fotoStorage.recuperar(fotoProduto.getNomeArquivo());
+			
+			return ResponseEntity.ok()
+					.contentType(MediaType.IMAGE_JPEG)
+					.body(new InputStreamResource(inputStream));
+		} catch (EntidadeNaoEncontradaException e) {
+			return ResponseEntity.notFound().build();
+		}
 	}
 	
 }

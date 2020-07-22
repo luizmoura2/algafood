@@ -1,5 +1,5 @@
-# Nome do seu projeto
-> Um resumo curto sobre o que o seu projeto faz
+# Algafood
+> Sistema usado como didática para o curso Especiaista em REST da Algaworks
 
 Um ou dois parágrafos sobre seu projeto e
 o que ele faz.
