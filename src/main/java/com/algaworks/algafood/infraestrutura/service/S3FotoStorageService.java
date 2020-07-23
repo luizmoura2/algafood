@@ -4,7 +4,6 @@ import java.net.URL;
 import java.nio.file.Path;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.algaworks.algafood.core.storage.StorageProperties;
 import com.algaworks.algafood.domain.service.FotoStorageService;
@@ -14,7 +13,6 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
-//@Service
 public class S3FotoStorageService implements FotoStorageService {
 
 	/**
@@ -66,7 +64,6 @@ public class S3FotoStorageService implements FotoStorageService {
 		}
 	}
 	
-	
 	@Override
 	public FotoRecuperada recuperar(String nomeArquivo) {
 		String caminhoArquivo = getCaminhoArquivo(nomeArquivo);
@@ -82,9 +79,4 @@ public class S3FotoStorageService implements FotoStorageService {
 		
 	}
 	
-	private Path getArquivoPath(String nomeArquivo) {
-		return storageProperties.getLocal().getDiretorioFotos()
-				.resolve(Path.of(nomeArquivo));
-	}
-
 }
