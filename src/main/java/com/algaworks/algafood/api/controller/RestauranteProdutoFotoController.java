@@ -1,6 +1,5 @@
 package com.algaworks.algafood.api.controller;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,9 +7,10 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,16 +31,19 @@ import com.algaworks.algafood.domain.exception.ObjectNaoEncontradoException;
 import com.algaworks.algafood.domain.model.FotoProduto;
 import com.algaworks.algafood.domain.model.Produto;
 import com.algaworks.algafood.domain.service.CatalogoFotoProdutoService;
-
+import com.algaworks.algafood.domain.service.FotoStorageService;
+import com.algaworks.algafood.domain.service.FotoStorageService.FotoRecuperada;
 import com.algaworks.algafood.domain.service.ProdutoService;
-import com.algaworks.algafood.infraestrutura.service.LocalFotoStorageService;
 
 @RestController
 @RequestMapping("/restaurantes/{restauranteId}/produtos/{produtoId}/foto")
 public class RestauranteProdutoFotoController {
 
+	
+	//private LocalFotoStorageService fotoStorage;
+	//private S3FotoStorageService fotoStorage;
 	@Autowired
-	private LocalFotoStorageService fotoStorage;
+	private FotoStorageService fotoStorage;
 	
 	@Autowired
 	private ProdutoService cadastroProduto;
@@ -93,7 +96,7 @@ public class RestauranteProdutoFotoController {
 	}
 	
 	@GetMapping(produces = MediaType.IMAGE_JPEG_VALUE)
-	public ResponseEntity<InputStreamResource> servirFoto(@PathVariable Long restauranteId, 
+	public ResponseEntity<?> servirFoto(@PathVariable Long restauranteId, 
 			@PathVariable Long produtoId, @RequestHeader(name = "accept") String acceptHeader) throws HttpMediaTypeNotAcceptableException {
 		try {
 			FotoProduto fotoProduto = catalogoFotoProduto.findBy_id(produtoId);
@@ -102,12 +105,19 @@ public class RestauranteProdutoFotoController {
 			List<MediaType> mediaTypesAceitas = MediaType.parseMediaTypes(acceptHeader);
 			
 			verificarCompatibilidadeMediaType(mediaTypeFoto, mediaTypesAceitas);
+						
+			FotoRecuperada fotoRecuperada = fotoStorage.recuperar(fotoProduto.getNomeArquivo());
 			
-			InputStream inputStream = fotoStorage.recuperar(fotoProduto.getNomeArquivo());
-			
-			return ResponseEntity.ok()
-					.contentType(MediaType.IMAGE_JPEG)
-					.body(new InputStreamResource(inputStream));
+			if (fotoRecuperada.temUrl()) {
+				return ResponseEntity
+						.status(HttpStatus.FOUND)
+						.header(HttpHeaders.LOCATION, fotoRecuperada.getUrl())
+						.build();
+			} else {
+				return ResponseEntity.ok()
+						.contentType(mediaTypeFoto)
+						.body(new InputStreamResource(fotoRecuperada.getInputStream()));
+			}
 		} catch (EntidadeNaoEncontradaException e) {
 			return ResponseEntity.notFound().build();
 		}
