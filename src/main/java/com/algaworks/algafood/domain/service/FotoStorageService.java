@@ -17,6 +17,7 @@ public interface FotoStorageService {
 	}
 	
 	default void substituir(String nomeArquivoAntigo, NovaFoto novaFoto) {
+		
 		this.armazenar(novaFoto);
 		
 		if (nomeArquivoAntigo != null) {

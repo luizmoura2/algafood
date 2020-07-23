@@ -53,8 +53,18 @@ public class CatalogoFotoProdutoService {
 		FotoProduto foto = produtoRepository.findFotoByProdutoId(produtoId);
 		System.out.println(foto);
 		return foto;
-	            
-		
+	     
+	}
+	
+	@Transactional
+	public void excluir(Long produtoId) {//Long restauranteId, Long produtoId) {
+	    
+		FotoProduto foto = produtoRepository.findFoto(produtoId);
+	    System.out.println(foto);
+	    produtoRepository.delete(foto);
+	    produtoRepository.flush();
+
+	    fotoStorage.remover(foto.getNomeArquivo());
 	}
 	
 }
