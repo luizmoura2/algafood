@@ -51,7 +51,7 @@ public class CatalogoFotoProdutoService {
 	public FotoProduto findBy_id(Long produtoId) {
 		
 		FotoProduto foto = produtoRepository.findFotoByProdutoId(produtoId);
-		System.out.println(foto);
+		
 		return foto;
 	     
 	}
@@ -60,7 +60,7 @@ public class CatalogoFotoProdutoService {
 	public void excluir(Long produtoId) {//Long restauranteId, Long produtoId) {
 	    
 		FotoProduto foto = produtoRepository.findFoto(produtoId);
-	    System.out.println(foto);
+	    
 	    produtoRepository.delete(foto);
 	    produtoRepository.flush();
 

@@ -23,6 +23,7 @@ public interface FotoStorageService {
 		if (nomeArquivoAntigo != null) {
 			this.remover(nomeArquivoAntigo);
 		}
+		
 	}
 	
 	@Builder

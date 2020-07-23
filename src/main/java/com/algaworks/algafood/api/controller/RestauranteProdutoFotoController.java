@@ -128,7 +128,7 @@ public class RestauranteProdutoFotoController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void excluir(@PathVariable Long restauranteId, 
 	        			@PathVariable Long produtoId) {
-		//System.out.println(foto);
+		
 		//Optional.ofNullable(foto).orElseThrow(
 				//() -> new ObjectNaoEncontradoException(foto.getId(), "FotoProduto"));
 		
