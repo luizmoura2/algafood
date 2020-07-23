@@ -11,6 +11,7 @@ import org.springframework.util.FileCopyUtils;
 
 import com.algaworks.algafood.core.storage.StorageProperties;
 import com.algaworks.algafood.domain.service.FotoStorageService;
+import com.amazonaws.services.s3.AmazonS3;
 
 //@Service
 public class S3FotoStorageService implements FotoStorageService {
@@ -19,7 +20,7 @@ public class S3FotoStorageService implements FotoStorageService {
 	 * Injeta a classe de propiedade
 	 */
 	@Autowired
-	private StorageProperties storageProperties;
+	private AmazonS3 amazonS3;
 	
 	@Override
 	public void armazenar(NovaFoto novaFoto) {
